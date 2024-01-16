@@ -1,19 +1,13 @@
-
-
-az group create -n crv-urlshortener-rg2 -l eastus
+az group create -n urlshortener -l westeurope
 
 ## validate with Parameter file
-az deployment group validate -g crv-urlshortener-rg2  --template-file "deployment/azureDeploy.json" --parameters "deployment/azureDeploy.params.dev.json"  --verbose 
+az deployment group validate -g urlshortener --template-file "deployment/azuredeploy.bicep" --parameters "deployment/azuredeploy.bicepparam"  --verbose
 
 ## deploy it with parameter file
-# az deployment group create  -g crv-urlshortener-rg2 -n urlshortenerv1 --template-file "deployment/azureDeploy.json" --parameters "deployment/azureDeploy.params.dev.json"  --verbose
+az deployment group create  -g urlshortener -n urlshortener --template-file "deployment/azuredeploy.bicep" --parameters "deployment/azuredeploy.bicepparam"
 
 ## what-if
-az deployment group create  -g crv-urlshortener-rg2  -n urlshortenerv1 --template-file "deployment/azureDeploy.json" --parameters "deployment/azureDeploy.params.dev.json"  --verbose --what-what-if-result-format
-
-## deploy it
-az deployment group create  -g crv-urlshortener-rg2  -n urlshortenerv1 --template-file "deployment/azureDeploy.json" --parameters "deployment/azureDeploy.params.dev.json"  --verbose 
-
+az deployment group create  -g urlshortener  -n urlshortener --template-file "deployment/azuredeploy.bicep" --parameters "deployment/azuredeploy.bicepparam" --what-what-if-result-format
 
 ## update setting
-az functionapp config appsettings set --name c5murltest --resource-group crv-urlshortener-rg2 --settings "FUNCTIONS_WORKER_RUNTIME=dotnet-isolated"
+# az functionapp config appsettings set --name c5murltest --resource-group crv-urlshortener-rg2 --settings "FUNCTIONS_WORKER_RUNTIME=dotnet-isolated"
