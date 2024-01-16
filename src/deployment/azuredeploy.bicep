@@ -21,8 +21,7 @@ param location string = resourceGroup().location
 
 var suffix = substring(toLower(uniqueString(resourceGroup().id, location)), 0, 5)
 var funcAppName = toLower('${baseName}-${suffix}-fa')
-var swaNameVar = '${substring(baseName, 0, min(length(baseName), 13))}-${suffix}-swa'
-var deployTinyBlazorAdmin = ((swaName == 'SKIP-THIS-RESOURCE') ? 'false' : 'true')
+var deployTinyBlazorAdmin = ((swaName == 'SKIP-THIS-RESOURCE') ? false : true)
 var storageAccountName = toLower('${substring(baseName, 0, min(length(baseName), 16))}${suffix}sa')
 var funcHostingPlanName = '${substring(baseName, 0, min(length(baseName), 13))}-${suffix}-asp'
 var insightsAppName = '${substring(baseName, 0, min(length(baseName), 13))}-${suffix}-ai'
@@ -158,28 +157,11 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
 }
 
-resource swa 'Microsoft.Web/staticSites@2023-01-01' = if (toLower(deployTinyBlazorAdmin) == 'true') {
-  name: swaNameVar
-  location: location
-  sku: {
-    name: 'Standard'
-    tier: 'Standard'
-  }
-  properties: {
-    repositoryUrl: gitHubURL
-    branch: gitHubBranch
-    buildProperties: {
-      appLocation: './src/Cloud5mins.ShortenerTools.TinyBlazorAdmin'
-      outputLocation: 'wwwroot'
-    }
-    stagingEnvironmentPolicy: 'Enabled'
-    allowConfigFileUpdates: true
-    provider: 'GitHub'
-    enterpriseGradeCdnStatus: 'Disabled'
-  }
+resource swa 'Microsoft.Web/staticSites@2023-01-01' existing = if (deployTinyBlazorAdmin) {
+  name: swaName
 }
 
-resource swaLinkedBackend 'Microsoft.Web/staticSites/linkedBackends@2023-01-01' = if (toLower(deployTinyBlazorAdmin) == 'true') {
+resource swaLinkedBackend 'Microsoft.Web/staticSites/linkedBackends@2023-01-01' = if (deployTinyBlazorAdmin) {
   parent: swa
   name: 'backend1'
   properties: {
@@ -188,7 +170,7 @@ resource swaLinkedBackend 'Microsoft.Web/staticSites/linkedBackends@2023-01-01' 
   }
 }
 
-resource swaUserProvidedFunctionApp 'Microsoft.Web/staticSites/userProvidedFunctionApps@2023-01-01' = if (toLower(deployTinyBlazorAdmin) == 'true') {
+resource swaUserProvidedFunctionApp 'Microsoft.Web/staticSites/userProvidedFunctionApps@2023-01-01' = if (deployTinyBlazorAdmin) {
   parent: swa
   name: 'backend1'
   properties: {
@@ -197,7 +179,7 @@ resource swaUserProvidedFunctionApp 'Microsoft.Web/staticSites/userProvidedFunct
   }
 }
 
-resource swaAppSettings 'Microsoft.Web/staticSites/config@2023-01-01' = if (toLower(deployTinyBlazorAdmin) == 'true') {
+resource swaAppSettings 'Microsoft.Web/staticSites/config@2023-01-01' = if (deployTinyBlazorAdmin) {
   parent: swa
   name: 'appsettings'
   properties: {
