@@ -21,6 +21,7 @@ param location string = resourceGroup().location
 
 var suffix = substring(toLower(uniqueString(resourceGroup().id, location)), 0, 5)
 var funcAppName = toLower('${baseName}-${suffix}-fa')
+var workspaceName = toLower('${baseName}-${suffix}-la')
 var deployTinyBlazorAdmin = ((swaName == 'SKIP-THIS-RESOURCE') ? false : true)
 var storageAccountName = toLower('${substring(baseName, 0, min(length(baseName), 16))}${suffix}sa')
 var funcHostingPlanName = '${substring(baseName, 0, min(length(baseName), 13))}-${suffix}-asp'
@@ -125,7 +126,21 @@ resource funcHostingPlan 'Microsoft.Web/serverfarms@2023-01-01' = {
   }
 }
 
-// TODO: migrate to workspace based insights
+resource workspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+  name: workspaceName
+  location: location
+  tags: {
+    Owner: ownerName
+  }
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 30
+    workspaceCapping: {}
+  }
+}
+
 resource insightsApp 'Microsoft.Insights/components@2020-02-02' = {
   name: insightsAppName
   location: location
@@ -136,6 +151,10 @@ resource insightsApp 'Microsoft.Insights/components@2020-02-02' = {
   properties: {
     Application_Type: 'web'
     Request_Source: 'rest'
+    IngestionMode: 'LogAnalytics'
+    WorkspaceResourceId: workspace.id
+    RetentionInDays: 30
+    Flow_Type: 'Bluefield'
   }
 }
 
