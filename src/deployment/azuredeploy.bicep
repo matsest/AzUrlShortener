@@ -102,7 +102,7 @@ resource funcAppName_authsettingsV2 'Microsoft.Web/sites/config@2023-01-01' = {
   name: 'authsettingsV2'
   properties: {
     globalValidation: {
-      unauthenticatedClientAction: 'AllowAnonymous'
+      unauthenticatedClientAction: 'AllowAnonymous' // todo: verify
     }
   }
   dependsOn: [
@@ -115,7 +115,6 @@ resource funcAppName_authsettingsV2 'Microsoft.Web/sites/config@2023-01-01' = {
 resource funcHostingPlan 'Microsoft.Web/serverfarms@2023-01-01' = {
   name: funcHostingPlanName
   location: location
-  kind: ''
   tags: {
     Owner: ownerName
   }
@@ -126,13 +125,14 @@ resource funcHostingPlan 'Microsoft.Web/serverfarms@2023-01-01' = {
   }
 }
 
+// TODO: migrate to workspace based insights
 resource insightsApp 'Microsoft.Insights/components@2020-02-02' = {
   name: insightsAppName
   location: location
+  kind: 'other'
   tags: {
     Owner: ownerName
   }
-  kind: ''
   properties: {
     Application_Type: 'web'
     Request_Source: 'rest'
@@ -147,13 +147,11 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
   kind: 'StorageV2'
   tags: {
-    displayName: storageAccountName
     Owner: ownerName
   }
   properties: {
     supportsHttpsTrafficOnly: true
     minimumTlsVersion: 'TLS1_2'
-    publicNetworkAccess: 'Disabled'
   }
 }
 
@@ -161,6 +159,7 @@ resource swa 'Microsoft.Web/staticSites@2023-01-01' existing = if (deployTinyBla
   name: swaName
 }
 
+// Todo: add managed identity?
 resource swaLinkedBackend 'Microsoft.Web/staticSites/linkedBackends@2023-01-01' = if (deployTinyBlazorAdmin) {
   parent: swa
   name: 'backend1'
