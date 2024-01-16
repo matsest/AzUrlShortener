@@ -178,11 +178,30 @@ resource swaUserProvidedFunctionApp 'Microsoft.Web/staticSites/userProvidedFunct
   }
 }
 
+var tagsWithHiddenLinks = union({
+  'hidden-link: /app-insights-resource-id': insightsApp.id
+  'hidden-link: /app-insights-instrumentation-key': insightsApp.properties.InstrumentationKey
+  'hidden-link: /app-insights-conn-string': insightsApp.properties.ConnectionString
+}, swa.tags)
+
+resource swaTags 'Microsoft.Resources/tags@2023-07-01' = {
+  name: 'default'
+  scope: swa
+  properties: {
+    tags: tagsWithHiddenLinks
+  }
+}
+
 resource swaAppSettings 'Microsoft.Web/staticSites/config@2023-01-01' = if (deployTinyBlazorAdmin) {
   parent: swa
   name: 'appsettings'
+  kind: 'string'
   properties: {
     APPINSIGHTS_INSTRUMENTATIONKEY: insightsApp.properties.InstrumentationKey
     APPLICATIONINSIGHTS_CONNECTION_STRING: insightsApp.properties.ConnectionString
   }
+  dependsOn: [
+    swaLinkedBackend
+    swaUserProvidedFunctionApp
+  ]
 }
