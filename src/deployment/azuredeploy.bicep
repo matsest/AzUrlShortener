@@ -1,8 +1,8 @@
 @description('Name used as base-template to name the resources to be deployed in Azure.')
 param baseName string = 'shortenertool'
 
-@description('Optional (SKIP-THIS-RESOURCE): If provided, this is name of the the already created Static Web App in this resource group. If not provided: API will be standalone')
-param existingSWAName string = 'SKIP-THIS-RESOURCE'
+@description('Optional (SKIP-THIS-RESOURCE): If provided, this is name of the Static Web App in this resource group. If not provided: API will be standalone')
+param swaName string = 'SKIP-THIS-RESOURCE'
 
 @description('Default URL used when key passed by the user is not found.')
 param defaultRedirectUrl string = 'https://azure.com'
@@ -21,8 +21,8 @@ param location string = resourceGroup().location
 
 var suffix = substring(toLower(uniqueString(resourceGroup().id, location)), 0, 5)
 var funcAppName = toLower('${baseName}-${suffix}-fa')
-var swaName = existingSWAName
-var deployTinyBlazorAdmin = ((existingSWAName == 'SKIP-THIS-RESOURCE') ? 'false' : 'true')
+var swaNameVar = '${substring(baseName, 0, min(length(baseName), 13))}-${suffix}-swa'
+var deployTinyBlazorAdmin = ((swaName == 'SKIP-THIS-RESOURCE') ? 'false' : 'true')
 var storageAccountName = toLower('${substring(baseName, 0, min(length(baseName), 16))}${suffix}sa')
 var funcHostingPlanName = '${substring(baseName, 0, min(length(baseName), 13))}-${suffix}-asp'
 var insightsAppName = '${substring(baseName, 0, min(length(baseName), 13))}-${suffix}-ai'
@@ -33,6 +33,9 @@ resource funcApp 'Microsoft.Web/sites@2023-01-01' = {
   location: location
   tags: {
     Owner: ownerName
+  }
+  identity: {
+    type: 'SystemAssigned'
   }
   properties: {
     siteConfig: {
@@ -150,11 +153,13 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   }
   properties: {
     supportsHttpsTrafficOnly: true
+    minimumTlsVersion: 'TLS1_2'
+    publicNetworkAccess: 'Disabled'
   }
 }
 
 resource swa 'Microsoft.Web/staticSites@2023-01-01' = if (toLower(deployTinyBlazorAdmin) == 'true') {
-  name: swaName
+  name: swaNameVar
   location: location
   sku: {
     name: 'Standard'
