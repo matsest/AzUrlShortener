@@ -1,13 +1,20 @@
 name: Azure Static Web Apps CI/CD
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - dev
+    paths:
+      - 'src/Cloud5mins.ShortenerTools.TinyBlazorAdmin/**'
+      - 'src/deployment/*'
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
       - dev
+    paths:
+      - 'src/Cloud5mins.ShortenerTools.TinyBlazorAdmin/**'
+      - 'src/deployment/*'
 
 jobs:
   build_and_deploy_job:
