@@ -21,7 +21,7 @@ namespace Cloud5mins.ShortenerTools.Functions
 
         [Function("UrlRoot")]
         public async Task<HttpResponseData> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "")]
             HttpRequestData req,
             ExecutionContext context)
         {
