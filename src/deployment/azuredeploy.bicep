@@ -7,6 +7,9 @@ param swaName string = 'SKIP-THIS-RESOURCE'
 @description('Default URL used when key passed by the user is not found.')
 param defaultRedirectUrl string = 'https://azure.com'
 
+@description('Default URL used when the function is accessed on the root without any path.')
+param defaultRootUrl string = 'https://azure.com'
+
 @description('The URL of GitHub (ending by .git)')
 param gitHubURL string = 'https://github.com/microsoft/AzUrlShortener.git'
 
@@ -78,6 +81,14 @@ resource funcApp 'Microsoft.Web/sites@2023-01-01' = {
         {
           name: 'defaultRedirectUrl'
           value: defaultRedirectUrl
+        }
+        {
+          name: 'AzureWebJobsDisableHomepage'
+          value: 'true'
+        }
+        {
+          name: 'defaultRootUrl'
+          value: defaultRootUrl
         }
       ]
     }
