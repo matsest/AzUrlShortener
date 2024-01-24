@@ -1,17 +1,19 @@
-using Microsoft.Azure.Cosmos.Table;
+using Azure;
+using Azure.Data.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Cloud5mins.ShortenerTools.Core.Domain
 {
-    public class ShortUrlEntity : TableEntity
+    public class ShortUrlEntity : ITableEntity
     {
-        public string Url { get; set; }
-        private string _activeUrl { get; set; }
+        public string? Url { get; set; }
+        private string? _activeUrl { get; set; }
 
-        public string ActiveUrl
+        public string? ActiveUrl
         {
             get
             {
@@ -21,19 +23,18 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
             }
         }
 
+        public string? Title { get; set; }
 
-        public string Title { get; set; }
-
-        public string ShortUrl { get; set; }
+        public string? ShortUrl { get; set; }
 
         public int Clicks { get; set; }
 
         public bool? IsArchived { get; set; }
-        public string SchedulesPropertyRaw { get; set; }
+        public string? SchedulesPropertyRaw { get; set; }
 
-        private List<Schedule> _schedules { get; set; }
+        private List<Schedule>? _schedules { get; set; }
 
-        [IgnoreProperty]
+        [JsonIgnore]
         public List<Schedule> Schedules
         {
             get
@@ -46,7 +47,7 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
                     }
                     else
                     {
-                        _schedules = JsonSerializer.Deserialize<Schedule[]>(SchedulesPropertyRaw).ToList<Schedule>();
+                        _schedules = JsonSerializer.Deserialize<Schedule[]>(SchedulesPropertyRaw)?.ToList<Schedule>() ?? new List<Schedule>();
                     }
                 }
                 return _schedules;
@@ -56,6 +57,11 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
                 _schedules = value;
             }
         }
+
+        public string? PartitionKey { get; set; }
+        public string? RowKey { get; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get; set; }
 
         public ShortUrlEntity() { }
 
@@ -74,7 +80,7 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
             Initialize(longUrl, endUrl, title, schedules);
         }
 
-        private void Initialize(string longUrl, string endUrl, string title, Schedule[] schedules)
+        private void Initialize(string longUrl, string endUrl, string title, Schedule[]? schedules)
         {
             PartitionKey = endUrl.First().ToString();
             RowKey = endUrl;
@@ -102,13 +108,13 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
             };
         }
 
-        private string GetActiveUrl()
+        private string? GetActiveUrl()
         {
             if (Schedules != null)
                 return GetActiveUrl(DateTime.UtcNow);
             return Url;
         }
-        private string GetActiveUrl(DateTime pointInTime)
+        private string? GetActiveUrl(DateTime pointInTime)
         {
             var link = Url;
             var active = Schedules.Where(s =>

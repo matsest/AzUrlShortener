@@ -5,9 +5,9 @@ namespace Cloud5mins.ShortenerTools.Core.Messages
 {
     public class ShortUrlRequest
     {
-        private string _vanity;
+        private string? _vanity;
 
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         public string Vanity
         {
@@ -22,9 +22,9 @@ namespace Cloud5mins.ShortenerTools.Core.Messages
         }
 
         [Required]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
-        private List<Schedule> _schedules;
+        private List<Schedule>? _schedules;
 
         public List<Schedule> Schedules
         {
