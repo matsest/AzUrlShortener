@@ -42,6 +42,9 @@ resource funcApp 'Microsoft.Web/sites@2023-01-01' = {
   }
   properties: {
     siteConfig: {
+      localMySqlEnabled: false
+      use32BitWorkerProcess: true
+      netFrameworkVersion: 'v6.0'
       appSettings: [
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
@@ -96,10 +99,7 @@ resource funcApp 'Microsoft.Web/sites@2023-01-01' = {
       ]
     }
     serverFarmId: funcHostingPlan.id
-    // todo: this must be added to config (check export)
-    use32BitWorkerProcess: true
-    netFrameworkVersion: 'v6.0'
-    clientAffinityEnabled: true
+    clientAffinityEnabled: false
   }
 }
 
