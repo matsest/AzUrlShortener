@@ -5,7 +5,7 @@ Input:
     {
         // [Required] The url you wish to have a short version for
         "url": "https://docs.microsoft.com/en-ca/azure/azure-functions/functions-create-your-first-function-visual-studio",
-        
+
         // [Optional] Title of the page, or text description of your choice.
         "title": "Quickstart: Create your first function in Azure using Visual Studio"
 
@@ -91,7 +91,7 @@ namespace Cloud5mins.ShortenerTools.Functions
                     return badResponse;
                 }
 
-                StorageTableHelper stgHelper = new StorageTableHelper(_settings.DataStorage);
+                StorageTableHelper stgHelper = new StorageTableHelper(_settings.StorageUri);
 
                 string longUrl = input.Url.Trim();
                 string vanity = string.IsNullOrWhiteSpace(input.Vanity) ? "" : input.Vanity.Trim();

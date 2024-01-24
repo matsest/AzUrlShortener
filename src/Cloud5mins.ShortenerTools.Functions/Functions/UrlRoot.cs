@@ -29,6 +29,7 @@ namespace Cloud5mins.ShortenerTools.Functions
             redirectUrl = _settings.DefaultRootUrl ?? redirectUrl;
             var res = req.CreateResponse(HttpStatusCode.Redirect);
             res.Headers.Add("Location", redirectUrl);
+            await Task.CompletedTask; // Added await keyword
             return res;
         }
     }

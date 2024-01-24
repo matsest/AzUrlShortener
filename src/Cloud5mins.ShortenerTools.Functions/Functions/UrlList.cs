@@ -49,7 +49,7 @@ namespace Cloud5mins.ShortenerTools.Functions
             var result = new ListResponse();
             string userId = string.Empty;
 
-            StorageTableHelper stgHelper = new StorageTableHelper(_settings.DataStorage);
+            StorageTableHelper stgHelper = new StorageTableHelper(_settings.StorageUri);
 
             try
             {

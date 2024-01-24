@@ -78,7 +78,7 @@ namespace Cloud5mins.ShortenerTools.Functions
                     }
                 }
 
-                StorageTableHelper stgHelper = new StorageTableHelper(_settings.DataStorage);
+                StorageTableHelper stgHelper = new StorageTableHelper(_settings.StorageUri);
 
                 var rawStats = await stgHelper.GetAllStatsByVanity(input.Vanity);
 

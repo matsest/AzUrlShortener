@@ -33,7 +33,7 @@ namespace Cloud5mins.ShortenerTools.Functions
             {
                 redirectUrl = _settings.DefaultRedirectUrl ?? redirectUrl;
 
-                StorageTableHelper stgHelper = new StorageTableHelper(_settings.DataStorage);
+                StorageTableHelper stgHelper = new StorageTableHelper(_settings.StorageUri);
 
                 var tempUrl = new ShortUrlEntity(string.Empty, shortUrl);
                 var newUrl = await stgHelper.GetShortUrlEntity(tempUrl);
