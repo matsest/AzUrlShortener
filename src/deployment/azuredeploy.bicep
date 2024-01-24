@@ -60,12 +60,11 @@ resource funcApp 'Microsoft.Web/sites@2023-01-01' = {
           value: insightsApp.properties.ConnectionString
         }
         {
-          // TODO: Change to managed identity
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
+          name: 'AzureWebJobsStorage__accountName'
+          value: storageAccount.name
         }
         {
-          // TODO: Change to managed identity
+          // NOTE: Azure Files does not support Managed Identity
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
         }
@@ -89,6 +88,10 @@ resource funcApp 'Microsoft.Web/sites@2023-01-01' = {
         {
           name: 'defaultRootUrl'
           value: defaultRootUrl
+        }
+        {
+          name: 'storageUri'
+          value: storageAccount.properties.primaryEndpoints.table
         }
       ]
     }
@@ -183,6 +186,20 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   properties: {
     supportsHttpsTrafficOnly: true
     minimumTlsVersion: 'TLS1_2'
+  }
+}
+
+resource stgTableContributorRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
+}
+
+resource stgFuncRoleAssign 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(stgTableContributorRole.id, storageAccount.id)
+  scope: storageAccount
+  properties: {
+    principalId: funcApp.identity.principalId
+    roleDefinitionId: stgTableContributorRole.id
+    principalType: 'ServicePrincipal'
   }
 }
 
