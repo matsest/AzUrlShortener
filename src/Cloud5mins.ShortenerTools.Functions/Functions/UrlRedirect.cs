@@ -43,8 +43,11 @@ namespace Cloud5mins.ShortenerTools.Functions
                     _logger.LogInformation($"Found it: {newUrl.Url}");
                     newUrl.Clicks++;
                     await stgHelper.SaveClickStatsEntity(new ClickStatsEntity(newUrl.RowKey));
+                    _logger.LogInformation($"Saved click: {newUrl.Url}");
                     await stgHelper.SaveShortUrlEntity(newUrl);
+                    _logger.LogInformation($"Saved short shorturl entity: {newUrl.Url}");
                     redirectUrl = WebUtility.UrlDecode(newUrl.ActiveUrl);
+                    _logger.LogInformation($"Got redirect url: {redirectUrl}");
                 }
             }
             else
@@ -55,7 +58,6 @@ namespace Cloud5mins.ShortenerTools.Functions
             var res = req.CreateResponse(HttpStatusCode.Redirect);
             res.Headers.Add("Location", redirectUrl);
             return res;
-
         }
     }
 }
