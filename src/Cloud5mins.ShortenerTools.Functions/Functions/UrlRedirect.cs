@@ -33,7 +33,7 @@ namespace Cloud5mins.ShortenerTools.Functions
             {
                 redirectUrl = _settings.DefaultRedirectUrl ?? redirectUrl;
 
-                StorageTableHelper stgHelper = new StorageTableHelper(_settings.StorageUri);
+                StorageTableHelper stgHelper = new StorageTableHelper(_logger, _settings.StorageUri);
 
                 var tempUrl = new ShortUrlEntity(string.Empty, shortUrl);
                 var newUrl = await stgHelper.GetShortUrlEntity(tempUrl);
@@ -44,6 +44,7 @@ namespace Cloud5mins.ShortenerTools.Functions
                     newUrl.Clicks++;
                     await stgHelper.SaveClickStatsEntity(new ClickStatsEntity(newUrl.RowKey));
                     _logger.LogInformation($"Saved click: {newUrl.Url}");
+                    _logger.LogInformation($"Will save shorturl: {newUrl} {newUrl.RowKey} {newUrl.PartitionKey}");
                     await stgHelper.SaveShortUrlEntity(newUrl);
                     _logger.LogInformation($"Saved short shorturl entity: {newUrl.Url}");
                     redirectUrl = WebUtility.UrlDecode(newUrl.ActiveUrl);

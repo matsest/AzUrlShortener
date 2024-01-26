@@ -9,6 +9,7 @@
     <PackageReference Include="Azure.Data.Tables" Version="12.8.2" />
     <PackageReference Include="Azure.Identity" Version="1.10.4" />
     <PackageReference Include="cronos" Version="0.7.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
   </ItemGroup>
 
 </Project>

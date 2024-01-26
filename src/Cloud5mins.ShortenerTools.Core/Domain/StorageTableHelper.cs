@@ -2,15 +2,20 @@ using Azure.Data.Tables;
 using Azure.Core;
 using Azure.Identity;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace Cloud5mins.ShortenerTools.Core.Domain
 {
+
     public class StorageTableHelper
     {
-        private Uri StorageUri { get; set; }
 
-        public StorageTableHelper(Uri storageUri)
+        private Uri StorageUri { get; set; }
+        private readonly ILogger _logger;
+
+        public StorageTableHelper(ILogger logger, Uri storageUri)
         {
+            _logger = logger;
             StorageUri = storageUri;
         }
 
@@ -88,9 +93,24 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
 
         public async Task<ShortUrlEntity> SaveShortUrlEntity(ShortUrlEntity newShortUrl)
         {
-            var tableClient = GetUrlsTable();
-            await tableClient.UpsertEntityAsync(newShortUrl);
-            return newShortUrl;
+            try
+            {
+                _logger.LogInformation($"Saving ShortUrlEntity. PartitionKey: {newShortUrl.PartitionKey}, RowKey: {newShortUrl.RowKey}, OtherProperty: {newShortUrl.ActiveUrl}");
+
+                var tableClient = GetUrlsTable();
+                await tableClient.UpsertEntityAsync(newShortUrl);
+                return newShortUrl;
+            }
+            catch (Azure.RequestFailedException ex)
+            {
+                _logger.LogError($"Failed to save ShortUrlEntity. Error: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An unexpected error occurred. Error: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<bool> IfShortUrlEntityExistByVanity(string vanity)

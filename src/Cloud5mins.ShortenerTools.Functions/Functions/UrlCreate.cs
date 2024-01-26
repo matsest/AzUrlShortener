@@ -91,7 +91,7 @@ namespace Cloud5mins.ShortenerTools.Functions
                     return badResponse;
                 }
 
-                StorageTableHelper stgHelper = new StorageTableHelper(_settings.StorageUri);
+                StorageTableHelper stgHelper = new StorageTableHelper(_logger, _settings.StorageUri);
 
                 string longUrl = input.Url.Trim();
                 string vanity = string.IsNullOrWhiteSpace(input.Vanity) ? "" : input.Vanity.Trim();
