@@ -61,7 +61,8 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
         public string? PartitionKey { get; set; }
         public string? RowKey { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
-        public ETag ETag { get; set; }
+        public ETag? ETag { get; set; }
+        ETag ITableEntity.ETag { get; set; }
 
         public ShortUrlEntity() { }
 
@@ -89,7 +90,7 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
             Clicks = 0;
             IsArchived = false;
 
-            if(schedules?.Length>0)
+            if (schedules?.Length > 0)
             {
                 Schedules = schedules.ToList<Schedule>();
                 SchedulesPropertyRaw = JsonSerializer.Serialize<List<Schedule>>(Schedules);
