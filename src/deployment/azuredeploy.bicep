@@ -76,11 +76,6 @@ resource funcApp 'Microsoft.Web/sites@2023-01-01' = {
           value: '${funcAppName}ba91'
         }
         {
-          // TODO: Change to managed identity
-          name: 'DataStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
-        }
-        {
           name: 'defaultRedirectUrl'
           value: defaultRedirectUrl
         }

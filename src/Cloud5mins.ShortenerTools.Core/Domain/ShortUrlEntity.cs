@@ -61,9 +61,7 @@ namespace Cloud5mins.ShortenerTools.Core.Domain
         public string? PartitionKey { get; set; }
         public string? RowKey { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
-        public ETag? ETag { get; set; }
-        ETag ITableEntity.ETag { get; set; }
-
+        public ETag ETag { get; set; }
         public ShortUrlEntity() { }
 
         public ShortUrlEntity(string longUrl, string endUrl)
